@@ -1,0 +1,29 @@
+###############################################################################
+#                         FUNNEL configuration                                #
+###############################################################################
+server:
+  servlet:
+    context-path: /
+  port: 8200
+
+info:
+  libraries:
+    tomcat: $tomcat.version$
+    spring: $spring.version$
+
+spring:
+  datasource:
+    url: ${APF_DB_URL:jdbc:oracle:thin:@//apforacledb:1521/APFDB}
+    username: NEURONKY
+    password: NEURONKY
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      autoCommit: true
+#      maxLifetime: 90000 
+#      leakDetectionThreshold: 2000000000000000000 
+#      maximumPoolSize: 20 
+#      minimumIdle: 5 
+#      idleTimeout: 300000 
+#      connectionTimeout: 5000 
+#      initializationFailTimeout: 0 
+#      validationTimeout: 5000 
