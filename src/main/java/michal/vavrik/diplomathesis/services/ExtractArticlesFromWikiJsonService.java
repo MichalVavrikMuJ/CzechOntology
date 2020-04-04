@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,10 @@ public class ExtractArticlesFromWikiJsonService {
 	
 	private static final String splitBy = "\\{\"id\":";
 	
-	private static final String articleStartJSON = "{";
+	private static final String prefix = "{\"id\":";
 	
-	private static final String articleEndJSON = "}";
+	@Value("${wiki.dirPattern}")
+	private String wikiDirPattern;
 	
 	@Autowired
 	private ApplicationContext appContext;
@@ -62,7 +64,7 @@ public class ExtractArticlesFromWikiJsonService {
 	}
 
 	private Resource[] getArticleResources() throws IOException {
-		return appContext.getResources("file:*src/main/resources/wiki/*/wiki_*");
+		return appContext.getResources(wikiDirPattern);
 	}
 	
 	private List<String> oneArticleJsonObject(Resource file) throws IOException {
@@ -76,10 +78,8 @@ public class ExtractArticlesFromWikiJsonService {
 	    };
 	 
 	    String fileInString = byteSource.asCharSource(Charsets.UTF_8).read();
-//	    String[] articles = StringUtils.substringsBetween(fileInString, articleStartJSON, articleEndJSON);
 	    String[] articles = fileInString.split(splitBy);
-	    return Arrays.stream(articles).map(article -> "{\"id\":" + article).collect(Collectors.toList());
-//	    return Arrays.stream(articles).map(article -> articleStartJSON + article + articleEndJSON).collect(Collectors.toList());
+	    return Arrays.stream(articles).map(article -> prefix + article).collect(Collectors.toList());
 	}
 	
 }

@@ -1,5 +1,5 @@
 ###############################################################################
-#                         FUNNEL configuration                                #
+#                         WikiCorpusToNeuralNetwork configuration             #
 ###############################################################################
 server:
   servlet:
@@ -10,6 +10,9 @@ info:
   libraries:
     tomcat: $tomcat.version$
     spring: $spring.version$
+
+wiki:
+  dirPattern: file:*src/main/resources/wiki/*/wiki_*
 
 spring:
   datasource:
