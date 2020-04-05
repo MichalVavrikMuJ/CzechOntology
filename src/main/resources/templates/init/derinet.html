@@ -26,17 +26,18 @@
 					<th>OtherRelations</th>
 					<th>JSONGeneralData</th>
 				</tr></thead>
+				<!--/*@thymesVar id="row" type="michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO"*/-->
 				<tr th:each="row : ${derinetRows}">
-					<td th:text="${row.id}"></td>
-					<td th:text="${row.languageSpecificID}"></td>
-					<td th:text="${row.lemma}"></td>
-					<td th:text="${row.POS.getPOS()}"></td>
-					<td th:text="${row.MorphologicalFeatures}"></td>
-					<td th:text="${row.MorphologicalSegmentation}"></td>
-					<td th:text="${row.MainParentID}"></td>
-					<td th:text="${row.ParentRelation}"></td>
-					<td th:text="${row.OtherRelations}"></td>
-					<td th:text="${row.JSONGeneralData}"></td>
+					<td th:text="${row?.id}"></td>
+					<td th:text="${row?.languageSpecificID}"></td>
+					<td th:text="${row?.lemma}"></td>
+					<td th:text="${row?.POS?.getPOS()}"></td>
+					<td th:text="${row?.morphologicalFeatures}"></td>
+					<td th:text="${row?.morphologicalSegmentation}"></td>
+					<td th:text="${row?.mainParentID}"></td>
+					<td th:text="${row?.parentRelation}"></td>
+					<td th:text="${row?.otherRelations}"></td>
+					<td th:text="${row?.jsonGeneralData}"></td>
 				</tr>
 			</table>
 		</div>

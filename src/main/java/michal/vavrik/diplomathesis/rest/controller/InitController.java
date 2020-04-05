@@ -1,19 +1,23 @@
 package michal.vavrik.diplomathesis.rest.controller;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import lombok.extern.slf4j.Slf4j;
-import michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO;
 import michal.vavrik.diplomathesis.rest.model.WikiArticleDTO;
+import michal.vavrik.diplomathesis.services.DeriNetService;
 import michal.vavrik.diplomathesis.services.ExtractArticlesFromWikiJsonService;
 import michal.vavrik.diplomathesis.services.TsvParserService;
 import michal.vavrik.diplomathesis.services.WikiArticlesService;
@@ -31,6 +35,9 @@ public class InitController {
 	
 	@Value("${ufal.derinet}")
 	private String derinetFilePath;
+	
+	@Value("${ufal.testExampleDerinet}")
+	private String derinetSmallTestExample;
 
 	@Autowired
 	private ExtractArticlesFromWikiJsonService extractArticlesService;
@@ -40,6 +47,9 @@ public class InitController {
 	
 	@Autowired
 	private TsvParserService tsvService;
+	
+	@Autowired
+	private DeriNetService deriNetService;
 	
 	@Autowired
 	private ApplicationContext context;
@@ -59,18 +69,19 @@ public class InitController {
 		return "init/wiki";
 	}
 	
+	@ResponseBody
+	@ResponseStatus(HttpStatus.CREATED)
 	@GetMapping("/derinet")
 	public String parseAndStoreDerinet(Model model) throws IOException {
 		log.info("Started parsing and storing Derinet.");
 		
 		try {
-			List<DeriNetRowDTO> derinetRows = tsvService.getRows(context.getResources(derinetFilePath)[0].getFile());
-			model.addAttribute("derinetRows", derinetRows);
+			Arrays.stream(context.getResources(derinetFilePath)).map(tsvService::getRows).forEach(deriNetService::saveDeriNetRows);
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}
 		
-		return "init/derinet";
+		return "Process of parsing/storing has begun. See console more informations.";
 	}
 
 }

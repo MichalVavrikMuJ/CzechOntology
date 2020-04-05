@@ -10,7 +10,7 @@ import michal.vavrik.diplomathesis.database.entity.Czwiki;
 
 
 /**
- * Spring data {@link org.springframework.data.repository.Repository} for {@link PageMap} entity.
+ * Spring data {@link org.springframework.data.repository.Repository} for {@link Czwiki} entity.
  */
 @Repository
 public interface CzWikiRepository extends JpaRepository<Czwiki, BigDecimal> {

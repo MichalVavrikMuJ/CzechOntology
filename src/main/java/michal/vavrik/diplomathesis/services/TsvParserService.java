@@ -1,14 +1,14 @@
 package michal.vavrik.diplomathesis.services;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Enums;
@@ -24,7 +24,7 @@ import michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO;
 @Service
 public class TsvParserService {
 	
-	public List<DeriNetRowDTO> getRows(File file) {
+	public List<DeriNetRowDTO> getRows(Resource resource) {
 		try {
 			List<DeriNetRowDTO> result = new ArrayList<>();
 			TsvParserSettings settings = new TsvParserSettings();
@@ -34,10 +34,10 @@ public class TsvParserService {
 			    	result.add(mapRowToDTO(row));
 			    }
 			});
-			(new TsvParser(settings)).parse(new FileReader(file));
+			(new TsvParser(settings)).parse(new FileReader(resource.getFile()));
 			return result;
-		} catch (FileNotFoundException e) {
-			log.error("Could not read file named {}", file.getName());
+		} catch (IOException e) {
+			log.error("Could not read file named {}", resource.getFilename());
 			return Collections.emptyList();
 		}
 	}
@@ -49,14 +49,14 @@ public class TsvParserService {
 			.builder()
 			.id(row.get(0))
 			.languageSpecificID(row.get(1))
-			.Lemma(row.get(2))
+			.lemma(row.get(2))
 			.POS(Enums.getIfPresent(DeriNetRowDTO.PartOfSpeech.class, row.get(3)).orNull())
-			.MorphologicalFeatures(row.get(4))
-			.MorphologicalSegmentation(row.get(5))
-			.MainParentID(row.get(6))
-			.ParentRelation(row.get(7))
-			.OtherRelations(row.get(8))
-			.JSONGeneralData(row.get(9))
+			.morphologicalFeatures(row.get(4))
+			.morphologicalSegmentation(row.get(5))
+			.mainParentID(row.get(6))
+			.parentRelation(row.get(7))
+			.otherRelations(row.get(8))
+			.jsonGeneralData(row.get(9))
 			.build();
 	}
 

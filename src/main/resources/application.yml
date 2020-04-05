@@ -15,7 +15,8 @@ wiki:
   dirPattern: file:*src/main/resources/wiki/*/wiki_*
   
 ufal:
-  derinet: file:*src/main/resources/ufal/derinet-2-0.tsv
+  derinet: file:*src/main/resources/ufal/derinet-2-0-*.tsv
+  testExampleDerinet: file:*src/main/resources/ufal/example-deri.tsv
 
 spring:
   datasource:

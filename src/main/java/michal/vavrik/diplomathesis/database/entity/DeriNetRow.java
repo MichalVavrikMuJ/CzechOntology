@@ -1,4 +1,14 @@
-package michal.vavrik.diplomathesis.rest.model;
+package michal.vavrik.diplomathesis.database.entity;
+
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,18 +17,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/**
- * @author Michal Vavrik
- *
- *	refers to Derinet 2.x format
- */
 @Getter
 @Setter
 @AllArgsConstructor
 @ToString
 @NoArgsConstructor
 @Builder
-public class DeriNetRowDTO {
+@Entity
+public class DeriNetRow {
 	
 	public enum PartOfSpeech {
 		A("Adjective"), D("Adverb"), N("Noun"), V("Verb");
@@ -31,8 +37,10 @@ public class DeriNetRowDTO {
 		}
 	}
 	
-	private String id;
+	@Id
+	private Double id;
 	
+	@Column(name = "LANGUAGE_SPECIFIC_ID")
 	private String languageSpecificID;
 	
 	private String lemma;
@@ -43,7 +51,13 @@ public class DeriNetRowDTO {
 	
 	private String morphologicalSegmentation;
 	
-	private String mainParentID;
+	@ManyToOne
+	@JoinColumn(name="MAIN_PARENT_ID", nullable=true)
+	private DeriNetRow mainParent;
+	
+	@OneToMany(mappedBy = "mainParent", cascade = CascadeType.ALL)
+	private Set<DeriNetRow> descendantRows;
+
 	
 	/**
 	 * AKA RELTYPE
@@ -58,6 +72,7 @@ public class DeriNetRowDTO {
 	/**
 	 * e.g. annotation not fitting elsewhere, debugging labels, authorship informations etc.
 	 */
-	private String jsonGeneralData;
-	
+	@Column(name = "JSON_GENERAL_DATA")
+	private String JSONGeneralData;
+
 }
