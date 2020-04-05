@@ -23,14 +23,24 @@ public class MatcherController {
 	@Autowired
 	private WikiDerinetLinkerService linkerService;
 	
-	@GetMapping("/{keyWord}")
+	@GetMapping("/wiki/{keyWord}")
 	public String matchWikiArticlesWithKeyWord(Model model, @PathVariable(name = "keyWord") String keyWord) throws IOException {
-		log.info("Showing article for key word: {}.");
+		log.info("Showing article for key word: {}.", keyWord);
 		
 		model.addAttribute("wikiArticles", linkerService.linkKeyWordWithWiki(keyWord));
 		model.addAttribute("keyWord", keyWord);
 		
 		return "matcher/wiki";
+	}
+	
+	@GetMapping("/derinet/{keyWord}")
+	public String matchDeriNetRowWithKeyWord(Model model, @PathVariable(name = "keyWord") String keyWord) throws IOException {
+		log.info("Showing DeriNetRow entities for key word: {}.", keyWord);
+		
+		model.addAttribute("deriNetRows", linkerService.linkKeyWordWithDeriNetRow(keyWord));
+		model.addAttribute("keyWord", keyWord);
+		
+		return "matcher/derinet";
 	}
 
 }

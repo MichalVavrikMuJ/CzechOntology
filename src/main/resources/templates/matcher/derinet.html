@@ -10,7 +10,8 @@
 <body>
 	<div data-role="page" id="page-1">
 		<div data-role="header">
-			<h1>Derinet rows</h1>
+			<h1>Derinet rows for keyword:</h1>
+			<h2 th:text="${keyWord}"></h2>
 		</div>
 		<div data-role="content">
 			<table>
@@ -21,23 +22,23 @@
 					<th>Part Of Speech</th>
 					<th>Morphological features</th>
 					<th>Morphological segmentation</th>
-					<th>Main parent ID</th>
+					<th>Main parent</th>
 					<th>ParentRelation</th>
 					<th>OtherRelations</th>
 					<th>JSONGeneralData</th>
 				</tr></thead>
 				<!--/*@thymesVar id="row" type="michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO"*/-->
-				<tr th:each="row : ${derinetRows}">
+				<tr th:each="row : ${deriNetRows}">
 					<td th:text="${row?.id}"></td>
 					<td th:text="${row?.languageSpecificID}"></td>
 					<td th:text="${row?.lemma}"></td>
 					<td th:text="${row?.POS?.getPOS()}"></td>
 					<td th:text="${row?.morphologicalFeatures}"></td>
 					<td th:text="${row?.morphologicalSegmentation}"></td>
-					<td th:text="${row?.mainParentID}"></td>
+					<td th:text="${row?.mainParent?.lemma}"></td>
 					<td th:text="${row?.parentRelation}"></td>
 					<td th:text="${row?.otherRelations}"></td>
-					<td th:text="${row?.jsonGeneralData}"></td>
+					<td th:text="${row?.JSONGeneralData}"></td>
 				</tr>
 			</table>
 		</div>
