@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 import michal.vavrik.diplomathesis.database.entity.Czwiki;
 import michal.vavrik.diplomathesis.database.repository.CzWikiRepository;
-import michal.vavrik.diplomathesis.rest.controller.model.WikiArticleDTO;
+import michal.vavrik.diplomathesis.rest.model.WikiArticleDTO;
 
 @Slf4j
 @Service

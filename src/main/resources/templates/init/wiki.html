@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-2.0.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+	<div data-role="page" id="page-1">
+		<div data-role="header">
+			<h1>Wiki articles</h1>
+		</div>
+		<div data-role="content">
+			<table>
+				<thead><tr>
+					<th>id</th>
+					<th>title</th>
+					<th>url</th>
+					<th>text</th>
+				</tr></thead>
+				<tr th:each="article : ${wikiArticle}">
+					<td th:text="${article.id}">id</td>
+					<td th:text="${article.title}">title</td>
+					<td th:text="${article.url}">url</td>
+					<td th:text="${article.text}">text</td>
+				</tr>
+			</table>
+		</div>
+		<div data-role="footer">
+			<h4>END</h4>
+		</div>
+	</div>
+
+</body>
+</html>

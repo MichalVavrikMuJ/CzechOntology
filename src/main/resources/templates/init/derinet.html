@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-2.0.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+	<div data-role="page" id="page-1">
+		<div data-role="header">
+			<h1>Derinet rows</h1>
+		</div>
+		<div data-role="content">
+			<table>
+				<thead><tr>
+					<th>id</th>
+					<th>Language Specific ID</th>
+					<th>Lemma</th>
+					<th>Part Of Speech</th>
+					<th>Morphological features</th>
+					<th>Morphological segmentation</th>
+					<th>Main parent ID</th>
+					<th>ParentRelation</th>
+					<th>OtherRelations</th>
+					<th>JSONGeneralData</th>
+				</tr></thead>
+				<tr th:each="row : ${derinetRows}">
+					<td th:text="${row.id}"></td>
+					<td th:text="${row.languageSpecificID}"></td>
+					<td th:text="${row.lemma}"></td>
+					<td th:text="${row.POS.getPOS()}"></td>
+					<td th:text="${row.MorphologicalFeatures}"></td>
+					<td th:text="${row.MorphologicalSegmentation}"></td>
+					<td th:text="${row.MainParentID}"></td>
+					<td th:text="${row.ParentRelation}"></td>
+					<td th:text="${row.OtherRelations}"></td>
+					<td th:text="${row.JSONGeneralData}"></td>
+				</tr>
+			</table>
+		</div>
+		<div data-role="footer">
+			<h4>END</h4>
+		</div>
+	</div>
+
+</body>
+</html>

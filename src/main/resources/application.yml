@@ -13,6 +13,9 @@ info:
 
 wiki:
   dirPattern: file:*src/main/resources/wiki/*/wiki_*
+  
+ufal:
+  derinet: file:*src/main/resources/ufal/derinet-2-0.tsv
 
 spring:
   datasource:

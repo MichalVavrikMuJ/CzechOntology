@@ -18,7 +18,7 @@ import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 
 import lombok.extern.slf4j.Slf4j;
-import michal.vavrik.diplomathesis.rest.controller.model.DeriNetRowDTO;
+import michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO;
 
 @Slf4j
 @Service
@@ -44,6 +44,7 @@ public class TsvParserService {
 	
 	public DeriNetRowDTO mapRowToDTO(Object[] objectRow) {
 		List<String> row = Arrays.stream(objectRow).map(x -> x != null ? x.toString() : "").collect(Collectors.toList());
+		log.info("Mapping row to DTO - lemma: {}", row.get(2));
 		return DeriNetRowDTO
 			.builder()
 			.id(row.get(0))
