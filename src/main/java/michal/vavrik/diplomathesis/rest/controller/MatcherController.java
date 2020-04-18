@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.extern.slf4j.Slf4j;
 import michal.vavrik.diplomathesis.services.WikiDerinetLinkerService;
+import michal.vavrik.diplomathesis.services.Word2VecService;
 
 @Slf4j
 @Controller
@@ -22,6 +23,9 @@ public class MatcherController {
 	
 	@Autowired
 	private WikiDerinetLinkerService linkerService;
+	
+	@Autowired
+	private Word2VecService word2VecService;
 	
 	@GetMapping("/wiki/{keyWord}")
 	public String matchWikiArticlesWithKeyWord(Model model, @PathVariable(name = "keyWord") String keyWord) throws IOException {
@@ -45,16 +49,14 @@ public class MatcherController {
 	
 	@GetMapping("/word2vec/{keyWord}")
 	public String word2vec(Model model, @PathVariable(name = "keyWord") String keyWord) throws IOException {
-		model.addAttribute("word2vec", linkerService.getWord2Vec(keyWord));
+		model.addAttribute("word2vec", word2VecService.getWord2Vec(keyWord));
 		model.addAttribute("keyWord", keyWord);
 		return "matcher/word2vec";
 	}
 	
-	@GetMapping("/word2vecSimilarity/{keyWord1}/{keyWord2}")
-	public String word2vecSimilarity(Model model, @PathVariable(name = "keyWord1") String keyWord1, @PathVariable(name = "keyWord2") String keyWord2) throws IOException {
-		model.addAttribute("similarity", linkerService.getWordsSimilarity(keyWord1, keyWord2));
-		model.addAttribute("keyWord1", keyWord1);
-		model.addAttribute("keyWord2", keyWord2);
+	@GetMapping("/word2vecSimilarity")
+	public String word2vecSimilarity(Model model) throws IOException {
+		model.addAttribute("mapOfRoots", word2VecService.getKnowRootDistances());
 		return "matcher/word2vec2Similarity";
 	}
 

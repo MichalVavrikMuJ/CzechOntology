@@ -10,12 +10,19 @@
 <body>
 	<div data-role="page" id="page-1">
 		<div data-role="header">
-			<h1>Word2vec similarity of</h1>
-			<h2 th:text="${keyWord1}"></h2>
-			<h2>and</h2>
-			<h2 th:text="${keyWord2}"></h2>
-			<h2>is</h2>
-			<h2 th:text="${similarity}"></h2>
+			<h1>Word2vec similarity for words with known roots.</h1>
+		</div>
+		<div data-role="content">
+			<table>
+				<thead><tr>
+					<th>Root</th>
+					<th>Derived word: Similarity</th>
+				</tr></thead>
+				<tr th:each="rootDistance : ${mapOfRoots}">
+					<td th:text="${rootDistance.value.rootWord}" style="padding-top: 10px; padding-bottom:10px">Root word</td>
+					<td style="padding-top: 10px; padding-bottom:10px"><span th:each="derivedWord : ${rootDistance.value.derivedWordsWithDistance}"> <span th:text="${derivedWord.key}"></span> : <span th:text="${derivedWord.value}"></span></span></td>
+				</tr>
+			</table>
 		</div>
 		<div data-role="footer">
 			<h4>END</h4>

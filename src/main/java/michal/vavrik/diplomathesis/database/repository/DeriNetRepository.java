@@ -13,6 +13,8 @@ import michal.vavrik.diplomathesis.database.entity.DeriNetRow;
 @Repository
 public interface DeriNetRepository extends JpaRepository<DeriNetRow, Double> {
 
+	public static final String ROOT = "Type=Root";
+	
 	/**
 	 * default search similar to LIKE SQL clause
 	 * 
@@ -21,4 +23,21 @@ public interface DeriNetRepository extends JpaRepository<DeriNetRow, Double> {
 	 */
 	List<DeriNetRow> findByLemmaContaining(String lemma);
 	
+	
+	/**
+	 * search {@link DeriNetRow#getMorphologicalSegmentation()} similarly to SQL LIKE clause
+	 * 
+	 * @param contain {@link String}
+	 * @return {@link List<DeriNetRow>} list of rows with known roots
+	 */
+	List<DeriNetRow> findByMorphologicalSegmentationContaining(String contain);
+	
+	/**
+	 * Retrieves list with words whose root were manually (by linguists) determined
+	 * 
+	 * @return {@link List<DeriNetRow>} list of rows with known roots
+	 */
+	default List<DeriNetRow> listWordsWithKnownRoot() {
+		return findByMorphologicalSegmentationContaining(ROOT);
+	}
 }
