@@ -2,6 +2,7 @@ package michal.vavrik.diplomathesis.services;
 
 import java.util.List;
 
+import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ import michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO;
 @Service
 @Slf4j
 public class WikiDerinetLinkerService {
+	
+	@Autowired
+	private Word2Vec word2Vec;
 	
 	@Autowired
 	private CzWikiRepository wikiRepository;
@@ -33,6 +37,15 @@ public class WikiDerinetLinkerService {
 	
 	public List<DeriNetRow> linkKeyWordWithDeriNetRow(String keyWord) {
 		return deriNetRepository.findByLemmaContaining(keyWord);
+	}
+
+	public Word2VecWord getWord2Vec(String keyWord) {
+		log.info("Started loading word2vec model.");
+		return Word2VecWord.builder().keyWord(keyWord).wordVector(word2Vec.getWordVector(keyWord)).wordsNearest(word2Vec.wordsNearest(keyWord, 100)).build();
+	}
+	
+	public String getWordsSimilarity(String keyWord1, String keyWord2) {
+		return Double.toString(word2Vec.similarity(keyWord1, keyWord2));
 	}
 
 }

@@ -4,3 +4,4 @@ target
 .classpath
 .project
 .sts4-cache
+src/main/resources/fasttext/cc.cs.300.vec

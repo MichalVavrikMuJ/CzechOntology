@@ -42,5 +42,20 @@ public class MatcherController {
 		
 		return "matcher/derinet";
 	}
+	
+	@GetMapping("/word2vec/{keyWord}")
+	public String word2vec(Model model, @PathVariable(name = "keyWord") String keyWord) throws IOException {
+		model.addAttribute("word2vec", linkerService.getWord2Vec(keyWord));
+		model.addAttribute("keyWord", keyWord);
+		return "matcher/word2vec";
+	}
+	
+	@GetMapping("/word2vecSimilarity/{keyWord1}/{keyWord2}")
+	public String word2vecSimilarity(Model model, @PathVariable(name = "keyWord1") String keyWord1, @PathVariable(name = "keyWord2") String keyWord2) throws IOException {
+		model.addAttribute("similarity", linkerService.getWordsSimilarity(keyWord1, keyWord2));
+		model.addAttribute("keyWord1", keyWord1);
+		model.addAttribute("keyWord2", keyWord2);
+		return "matcher/word2vec2Similarity";
+	}
 
 }

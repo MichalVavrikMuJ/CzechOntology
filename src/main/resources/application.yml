@@ -13,6 +13,10 @@ info:
 
 wiki:
   dirPattern: file:*src/main/resources/wiki/*/wiki_*
+
+fastText:
+  word2vecModel: file:*src/main/resources/fasttext/*.vec
+  binModel: file:*src/main/resources/fasttext/*.bin
   
 ufal:
   derinet: file:*src/main/resources/ufal/derinet-2-0-*.tsv

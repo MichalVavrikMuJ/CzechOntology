@@ -32,17 +32,20 @@
 
 	<dependencies>
 	
+		<!-- https://mvnrepository.com/artifact/org.deeplearning4j/deeplearning4j-core -->
 		<dependency>
-    		<groupId>org.deeplearning4j</groupId>
+		    <groupId>org.deeplearning4j</groupId>
 		    <artifactId>deeplearning4j-core</artifactId>
-		    <version>0.9.1</version>
+		    <version>1.0.0-beta6</version>
 		</dependency>
 		
+		<!-- https://mvnrepository.com/artifact/org.nd4j/nd4j-native-platform -->
 		<dependency>
-    		<groupId>org.nd4j</groupId>
+		    <groupId>org.nd4j</groupId>
 		    <artifactId>nd4j-native-platform</artifactId>
-		    <version>0.9.1</version>
+		    <version>1.0.0-beta6</version>
 		</dependency>
+
 		
 		<!-- Spring boot -->
 		<dependency>
@@ -141,6 +144,34 @@
 		    <artifactId>orika-core</artifactId>
 		    <version>1.5.4</version>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.deeplearning4j/deeplearning4j-nlp -->
+		<dependency>
+		    <groupId>org.deeplearning4j</groupId>
+		    <artifactId>deeplearning4j-nlp</artifactId>
+		    <version>1.0.0-beta6</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.deeplearning4j/deeplearning4j-nn -->
+		<dependency>
+		    <groupId>org.deeplearning4j</groupId>
+		    <artifactId>deeplearning4j-nn</artifactId>
+		    <version>1.0.0-beta6</version>
+		</dependency>
+		
+		<dependency>
+		  <groupId>com.github.vinhkhuc</groupId>
+		  <artifactId>jfasttext</artifactId>
+		  <version>0.4</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.bytedeco/javacpp -->
+		<dependency>
+		    <groupId>org.bytedeco</groupId>
+		    <artifactId>javacpp</artifactId>
+		    <version>1.5.3</version>
+		</dependency>
+				
 	</dependencies>
 
 	<build>
