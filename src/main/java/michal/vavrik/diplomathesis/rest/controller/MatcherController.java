@@ -59,5 +59,13 @@ public class MatcherController {
 		model.addAttribute("mapOfRoots", word2VecService.getKnowRootDistances());
 		return "matcher/word2vec2Similarity";
 	}
+	
+	@GetMapping("/word2vecSimilarInCharacters/{keyWord}/{accuracy:.+}")
+	public String word2vecSimilarInCharacters(Model model, @PathVariable(name = "keyWord") String keyWord, @PathVariable(name = "accuracy") double accuracy) throws IOException {
+		log.info("Started computing words similar in characters to keyword {} with accuracy {}.", keyWord, accuracy);
+		model.addAttribute("keyWord", keyWord);
+		model.addAttribute("listOfSimilarities", word2VecService.getWordsSimilarInCharacter(keyWord, accuracy));
+		return "matcher/word2vecSimilarInCharacter";
+	}
 
 }

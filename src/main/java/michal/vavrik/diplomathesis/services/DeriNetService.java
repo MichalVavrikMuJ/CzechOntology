@@ -37,6 +37,13 @@ public class DeriNetService {
 		log.info("{} DeriNetRow entities stored.", derinetRepository.saveAll(entities).size());
 	}
 	
+	public List<String> getWordsDerived(String from) {
+		log.info("quering db for words derived from {}.", from);
+		List<DeriNetRow> derivedWords = this.derinetRepository.findByMainParentId(derinetRepository.findByLemma(from).getId());
+		log.info("{} results retrieved.", derivedWords.size());
+		return derivedWords.stream().map(DeriNetRow::getLemma).collect(Collectors.toList());
+	}
+	
 	public String getRoot(DeriNetRow derinetRow) {
 		return this.getSegmentationMap(derinetRow).get("Morph");
 	}
@@ -61,7 +68,10 @@ public class DeriNetService {
 	
 	public Map<String, DistanceToRoot> getMapOfWordsWithKnownRoot() {
 		Map<String, DistanceToRoot> rootDistances = new HashMap<>();
-		derinetRepository.listWordsWithKnownRoot().stream().limit(100).forEach(
+		derinetRepository.listWordsWithKnownRoot().stream()
+		// FIXME: change limit(100) to something reasonable
+		.limit(100)
+		.forEach(
 				word -> {
 					String root = this.getRoot(word);
 					rootDistances.merge(

@@ -1,5 +1,6 @@
 package michal.vavrik.diplomathesis.services;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,8 @@ import michal.vavrik.diplomathesis.services.DeriNetService.DistanceToRoot;
 @Service @Slf4j
 public class Word2VecService {
 
+	public static final double DEFAULT_SIMILARITY_ACCURACY = 0.75;
+	
 	@Autowired
 	private Word2Vec word2Vec;
 	
@@ -26,6 +29,14 @@ public class Word2VecService {
 	
 	public String getWordsSimilarity(String keyWord1, String keyWord2) {
 		return Double.toString(word2Vec.similarity(keyWord1, keyWord2));
+	}
+	
+	public List<String> getWordsSimilarInCharacter(String word, double accuracy) {
+		return word2Vec.similarWordsInVocabTo(word, accuracy);
+	}
+	
+	public List<double[]> getWordVectors(List<String> words) {
+		return words.stream().map(word2Vec::getWordVector).filter(x -> x != null).collect(Collectors.toList());
 	}
 	
 	/**

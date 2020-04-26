@@ -5,6 +5,16 @@ import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
+import org.deeplearning4j.nn.api.OptimizationAlgorithm;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
+import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.weights.WeightInit;
+import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.learning.config.Adam;
+import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -72,6 +82,31 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 		} finally {
 			log.info("Successfully loaded word2vec model");
 		}
+	}
+	
+	@Bean
+	public MultiLayerConfiguration multiLayerConfiguration(Word2Vec word2Vec) {
+		log.info("Started preparing multi layer configuration.");
+		int numOfInputs = word2Vec.getWordVector("ano").length;
+		return new NeuralNetConfiguration.Builder()
+			    .seed(65432)
+			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+			    .updater(new Adam(0.1))
+			    .list()
+			    .layer(0, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfInputs)
+			            .weightInit(WeightInit.XAVIER)
+			            .activation(Activation.RELU)
+			            .build())
+			    .layer(1, new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
+			            .weightInit(WeightInit.XAVIER)
+			            .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
+			            .nIn(numOfInputs).nOut(1).build())
+			    .build();
+	}
+	
+	@Bean MultiLayerNetwork multiLayerNetwork(MultiLayerConfiguration conf) {
+		log.info("Started creating MultiLayerNetwork.");
+		return new MultiLayerNetwork(conf);
 	}
 	
 //	@Bean

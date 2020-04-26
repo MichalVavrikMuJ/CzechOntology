@@ -23,6 +23,10 @@ public interface DeriNetRepository extends JpaRepository<DeriNetRow, Double> {
 	 */
 	List<DeriNetRow> findByLemmaContaining(String lemma);
 	
+	DeriNetRow findByLemma(String lemma);
+	
+	List<DeriNetRow> findByMainParentId(Double id);
+	
 	
 	/**
 	 * search {@link DeriNetRow#getMorphologicalSegmentation()} similarly to SQL LIKE clause
