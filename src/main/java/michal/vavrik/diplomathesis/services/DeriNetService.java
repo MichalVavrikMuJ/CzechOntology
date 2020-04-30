@@ -31,6 +31,10 @@ public class DeriNetService {
 	@Autowired
 	private DeriNetRepository derinetRepository;
 	
+	public List<String> getBaseWords() {
+		return derinetRepository.findByMainParentId(null).stream().map(DeriNetRow::getLemma).collect(Collectors.toList());
+	}
+	
 	public void saveDeriNetRows(List<DeriNetRowDTO> derinetRows) {
 		log.info("Maping {} DTO to DeriNetRow entities and storing them.", derinetRows.size());
 		List<DeriNetRow> entities = derinetRows.stream().map(row -> mapper.map(row, DeriNetRow.class)).collect(Collectors.toList());

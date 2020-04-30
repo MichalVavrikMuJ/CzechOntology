@@ -3,6 +3,7 @@ package michal.vavrik.diplomathesis.configuration;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.deeplearning4j.datasets.iterator.DoublesDataSetIterator;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
@@ -33,6 +34,7 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.Type;
 import michal.vavrik.diplomathesis.database.entity.DeriNetRow;
 import michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO;
+import michal.vavrik.diplomathesis.services.MatcherService;
 
 /**
  * Serves for configuring web service.
@@ -49,6 +51,8 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	MatcherService matcherService;
 	
 	@Bean
 	public MapperFacade mapperFacade() {
@@ -106,7 +110,15 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	
 	@Bean MultiLayerNetwork multiLayerNetwork(MultiLayerConfiguration conf) {
 		log.info("Started creating MultiLayerNetwork.");
-		return new MultiLayerNetwork(conf);
+		MultiLayerNetwork multiLayerNetwork = new MultiLayerNetwork(conf);
+		multiLayerNetwork.init();
+		DoublesDataSetIterator iterator = new DoublesDataSetIterator(matcherService.getTrainigSet(), 1);
+		// TODO: decide on number of training set iterations!!! 1000?
+		for(int i = 0; i < 1; i++) {
+			log.info("Started fitting network, iteration n. {}", i);
+			multiLayerNetwork.fit(iterator);
+		}
+		return multiLayerNetwork;
 	}
 	
 //	@Bean

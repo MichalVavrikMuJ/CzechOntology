@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.deeplearning4j.models.word2vec.Word2Vec;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,10 @@ public class Word2VecService {
 	
 	public List<double[]> getWordVectors(List<String> words) {
 		return words.stream().map(word2Vec::getWordVector).filter(x -> x != null).collect(Collectors.toList());
+	}
+	
+	public List<INDArray> getWordVectorMatrixes(List<String> words) {
+		return words.stream().map(word2Vec::getWordVectorMatrix).filter(x -> x != null).collect(Collectors.toList());
 	}
 	
 	/**

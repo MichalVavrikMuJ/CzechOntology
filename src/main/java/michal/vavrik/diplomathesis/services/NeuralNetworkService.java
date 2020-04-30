@@ -2,10 +2,8 @@
 
 import java.util.List;
 
-import org.deeplearning4j.datasets.iterator.DoublesDataSetIterator;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,21 +28,14 @@ public class NeuralNetworkService {
 	 * @return {@link List<String>} 
 	 */
 	public List<String> modelDerivationalRelations(String baseWord) {
-		word2VecService.getWordsSimilarInCharacter(baseWord, Word2VecService.DEFAULT_SIMILARITY_ACCURACY);
+		List<String> wordsSimilarInCharacter = word2VecService.getWordsSimilarInCharacter(baseWord, Word2VecService.DEFAULT_SIMILARITY_ACCURACY);
+		List<INDArray> wordVectorMatrixes = word2VecService.getWordVectorMatrixes(wordsSimilarInCharacter);
+		INDArray output = network.output(wordVectorMatrixes.get(0));
 		
-		INDArray inputLayerData = Nd4j.zeros(2, 2);
+		log.info(output.getRow(0).toString());
 		
 		// return list of results
 		return null;
-	}
-
-	public INDArray neuralNetwork(INDArray data) {
-		return network.output(data , false);
-	}
-	
-	public void trainNeuralNetwork(DoublesDataSetIterator iterator) {
-		network.init();
-		network.fit(iterator);
 	}
 	
 }
