@@ -22,6 +22,9 @@ ufal:
   derinet: file:*src/main/resources/ufal/derinet-2-0-*.tsv
   testExampleDerinet: file:*src/main/resources/ufal/example-deri.tsv
 
+neuralNetworkModel:
+  trainingSetModel: file:*src/main/resources/neuralNetworkModel/trainedNeuralNetwork
+
 spring:
   datasource:
     url: ${APF_DB_URL:jdbc:oracle:thin:@//apforacledb:1521/APFDB}

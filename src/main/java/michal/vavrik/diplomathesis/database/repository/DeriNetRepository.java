@@ -2,6 +2,7 @@ package michal.vavrik.diplomathesis.database.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,9 +24,11 @@ public interface DeriNetRepository extends JpaRepository<DeriNetRow, Double> {
 	 */
 	List<DeriNetRow> findByLemmaContaining(String lemma);
 	
-	DeriNetRow findByLemma(String lemma);
+	List<DeriNetRow> findByLemma(String lemma);
 	
 	List<DeriNetRow> findByMainParentId(Double id);
+	
+	List<DeriNetRow> findByMainParentId(Double id, Pageable pageable);
 	
 	
 	/**

@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -31,8 +33,12 @@ public class DeriNetService {
 	@Autowired
 	private DeriNetRepository derinetRepository;
 	
-	public List<String> getBaseWords() {
-		return derinetRepository.findByMainParentId(null).stream().map(DeriNetRow::getLemma).collect(Collectors.toList());
+//	@Autowired
+//	private DerivedSamplesRepository derivedSamplesRepository;
+	
+	public List<String> getBaseWords(int betweenStart, int betweenEnd) {
+		log.info("Starting to query for base words");
+		return derinetRepository.findByMainParentId(null, PageRequest.of(betweenStart, betweenEnd, Sort.by(Sort.Direction.ASC, "mainParentId"))).stream().map(DeriNetRow::getLemma).collect(Collectors.toList());
 	}
 	
 	public void saveDeriNetRows(List<DeriNetRowDTO> derinetRows) {
@@ -43,10 +49,15 @@ public class DeriNetService {
 	
 	public List<String> getWordsDerived(String from) {
 		log.info("quering db for words derived from {}.", from);
-		List<DeriNetRow> derivedWords = this.derinetRepository.findByMainParentId(derinetRepository.findByLemma(from).getId());
+		List<DeriNetRow> derivedWords = this.derinetRepository.findByMainParentId(derinetRepository.findByLemma(from).get(0).getId());
 		log.info("{} results retrieved.", derivedWords.size());
 		return derivedWords.stream().map(DeriNetRow::getLemma).collect(Collectors.toList());
 	}
+	
+	public List<DeriNetRow> getDeriNetRowsDerived(String from) {
+		log.info("quering db for words derived from {}.", from);
+		return this.derinetRepository.findByMainParentId(derinetRepository.findByLemma(from).get(0).getId());
+		}
 	
 	public String getRoot(DeriNetRow derinetRow) {
 		return this.getSegmentationMap(derinetRow).get("Morph");
@@ -91,6 +102,10 @@ public class DeriNetService {
 				});
 		return rootDistances;
 	}
+	
+//	public void storeDerivedWordsTrainingSet() {
+//		derivedSamplesRepository.save(entity);
+//	}
 	
 	@Builder @Getter @Setter
 	public static class DistanceToRoot {

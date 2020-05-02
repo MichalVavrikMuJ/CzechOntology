@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import michal.vavrik.diplomathesis.rest.model.WikiArticleDTO;
 import michal.vavrik.diplomathesis.services.DeriNetService;
 import michal.vavrik.diplomathesis.services.ExtractArticlesFromWikiJsonService;
+import michal.vavrik.diplomathesis.services.MatcherService;
 import michal.vavrik.diplomathesis.services.TsvParserService;
 import michal.vavrik.diplomathesis.services.WikiArticlesService;
 
@@ -82,6 +83,15 @@ public class InitController {
 		}
 		
 		return "Process of parsing/storing has begun. See console more informations.";
+	}
+	
+	@GetMapping("/derivedWords")
+	public String extractAndStoreDerivedWordsInDb(MatcherService matcherService) throws IOException {
+		log.info("Started extracting and storing derived words in db.");
+
+		// FIXME: finish
+		
+		return "";
 	}
 
 }

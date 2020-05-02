@@ -1,6 +1,8 @@
 package michal.vavrik.diplomathesis.configuration;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.deeplearning4j.datasets.iterator.DoublesDataSetIterator;
@@ -12,10 +14,10 @@ import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
-import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
+import org.nd4j.linalg.lossfunctions.LossFunctions;
+import org.nd4j.linalg.primitives.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +49,9 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	
 	@Value("${fastText.word2vecModel}")
 	private String word2vecModelPattern;
+	
+	@Value("${neuralNetworkModel.trainingSetModel}")
+	private String neuralNetworkModelFilePath;
 	
 	@Autowired
 	private ApplicationContext context;
@@ -91,32 +96,55 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	@Bean
 	public MultiLayerConfiguration multiLayerConfiguration(Word2Vec word2Vec) {
 		log.info("Started preparing multi layer configuration.");
-		int numOfInputs = word2Vec.getWordVector("ano").length;
+		int numOfInputs = 300; // AKA word2Vec.getWordVector("ano").length;
 		return new NeuralNetConfiguration.Builder()
 			    .seed(65432)
 			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
 			    .updater(new Adam(0.1))
 			    .list()
 			    .layer(0, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfInputs)
-			            .weightInit(WeightInit.XAVIER)
-			            .activation(Activation.RELU)
-			            .build())
-			    .layer(1, new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
-			            .weightInit(WeightInit.XAVIER)
-			            .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
-			            .nIn(numOfInputs).nOut(1).build())
-			    .build();
+//                      .weightInit(WeightInit.DISTRIBUTION).dist(new UniformDistribution(0,1))
+                      .activation(Activation.SIGMOID)
+                      .build())
+              .layer(1, new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
+//                      .weightInit(WeightInit.DISTRIBUTION).dist(new UniformDistribution(0,1))
+                      .activation(Activation.SIGMOID)
+                      .nIn(numOfInputs).nOut(1).build())
+              .build();
+//		return new NeuralNetConfiguration.Builder()
+//			    .seed(65432)
+//			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+//			    .updater(new Adam(0.1))
+//			    .list()
+//			    .layer(0, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfInputs)
+//			            .weightInit(WeightInit.XAVIER)
+//			            .activation(Activation.RELU)
+//			            .build())
+//			    .layer(1, new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
+//			            .weightInit(WeightInit.XAVIER)
+//			            .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
+//			            .nIn(numOfInputs).nOut(numOfInputs).build())
+//			    .build();
 	}
 	
-	@Bean MultiLayerNetwork multiLayerNetwork(MultiLayerConfiguration conf) {
+	@Bean
+	MultiLayerNetwork multiLayerNetwork(MultiLayerConfiguration conf) throws IOException {
 		log.info("Started creating MultiLayerNetwork.");
-		MultiLayerNetwork multiLayerNetwork = new MultiLayerNetwork(conf);
-		multiLayerNetwork.init();
-		DoublesDataSetIterator iterator = new DoublesDataSetIterator(matcherService.getTrainigSet(), 1);
-		// TODO: decide on number of training set iterations!!! 1000?
-		for(int i = 0; i < 1; i++) {
-			log.info("Started fitting network, iteration n. {}", i);
-			multiLayerNetwork.fit(iterator);
+//		MultiLayerNetwork multiLayerNetwork = new MultiLayerNetwork(conf);
+//		multiLayerNetwork.init();
+		File trainingSetModel = context.getResources(neuralNetworkModelFilePath)[0].getFile();
+		MultiLayerNetwork multiLayerNetwork = MultiLayerNetwork.load(trainingSetModel, true);
+		List<Pair<double[],double[]>> trainingSet = matcherService.getTrainigSet(1, 15);
+		if (trainingSet != null && trainingSet.size() > 0) {
+			DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, 1);
+			// TODO: decide on number of training set iterations!!! 1000?
+			for(int i = 0; i < 1000; i++) {
+				log.info("Started fitting network, iteration n. {}", i);
+				multiLayerNetwork.fit(iterator);
+			}
+			multiLayerNetwork.save(trainingSetModel, true);
+		} else {
+			log.error("NEURAL NETWORK COULD NOT BE TRAINED - PROVIDED TRAINING SET IS EMPTY!");
 		}
 		return multiLayerNetwork;
 	}

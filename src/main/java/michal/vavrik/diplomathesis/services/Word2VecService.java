@@ -33,14 +33,32 @@ public class Word2VecService {
 	}
 	
 	public List<String> getWordsSimilarInCharacter(String word, double accuracy) {
+		log.info("Getting words similar in character to word {}.", word);
 		return word2Vec.similarWordsInVocabTo(word, accuracy);
 	}
 	
 	public List<double[]> getWordVectors(List<String> words) {
+		log.info("Getting word vectors for {} words.", words.size());
 		return words.stream().map(word2Vec::getWordVector).filter(x -> x != null).collect(Collectors.toList());
 	}
 	
+//	public List<DerivedSamples> getWordVectorsFromRow(List<DeriNetRow> words) {
+//		log.info("Getting word vectors for {} words.", words.size());
+//		return words.stream().map(x -> {
+//			double[] wordVector = word2Vec.getWordVector(x.getLemma());
+//			return DerivedSamples
+//				.builder()
+//				.word(x.getLemma())
+//				.id(x.getId())
+//				.positiveOrNegative(BigDecimal.ONE)
+////				.wordVector(Array)
+//				.build();
+//		}).filter(x -> x != null).collect(Collectors.toList());
+//		// FIXME: finish implementation0
+//	}
+	
 	public List<INDArray> getWordVectorMatrixes(List<String> words) {
+		log.info("Getting word vector matrixes for {} words.", words.size());
 		return words.stream().map(word2Vec::getWordVectorMatrix).filter(x -> x != null).collect(Collectors.toList());
 	}
 	
