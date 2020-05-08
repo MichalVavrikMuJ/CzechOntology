@@ -15,7 +15,7 @@ import michal.vavrik.diplomathesis.services.DeriNetService.DistanceToRoot;
 @Service @Slf4j
 public class Word2VecService {
 
-	public static final double DEFAULT_SIMILARITY_ACCURACY = 0.75;
+	public static final double DEFAULT_SIMILARITY_ACCURACY = 0.85;
 	
 	@Autowired
 	private Word2Vec word2Vec;
@@ -40,6 +40,11 @@ public class Word2VecService {
 	public List<double[]> getWordVectors(List<String> words) {
 		log.info("Getting word vectors for {} words.", words.size());
 		return words.stream().map(word2Vec::getWordVector).filter(x -> x != null).collect(Collectors.toList());
+	}
+	
+	public double[] getWordVector(String word) {
+		log.info("Getting word vector for {}.", word);
+		return word2Vec.getWordVector(word);
 	}
 	
 //	public List<DerivedSamples> getWordVectorsFromRow(List<DeriNetRow> words) {

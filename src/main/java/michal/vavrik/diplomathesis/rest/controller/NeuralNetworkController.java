@@ -20,11 +20,26 @@ public class NeuralNetworkController {
 	@Autowired
 	private NeuralNetworkService neuralNetworkService;
 	
-	@GetMapping("/{baseWord}")
-	public String derivedWordsFrom(Model model, @PathVariable(name = "baseWord") String baseWord) {
-		model.addAttribute("baseWord", baseWord);
-		model.addAttribute("listOfDerived", neuralNetworkService.modelDerivationalRelations(baseWord));
-		return "neural-network/derivedWords";
+	@GetMapping("/train/{pageIndex}/{pageSize}")
+	public String trainModel(Model model, @PathVariable(name = "pageIndex") int pageIndex, @PathVariable(name = "pageSize") int pageSize) {
+		neuralNetworkService.trainNeuralNetworkModel(pageIndex, pageSize);
+		model.addAttribute("pageIndex", pageIndex);
+		model.addAttribute("pageSize", pageSize);
+		return "neural-network/trainNeuralNetworkModel";
+	}
+	
+	@GetMapping("/evaluate/{pageIndex}/{pageSize}")
+	public String evaluateModel(Model model, @PathVariable(name = "pageIndex") int pageIndex, @PathVariable(name = "pageSize") int pageSize) {
+		neuralNetworkService.evaluateNeuralNetworkModel(pageIndex, pageSize);
+		model.addAttribute("pageIndex", pageIndex);
+		model.addAttribute("pageSize", pageSize);
+		return "neural-network/trainNeuralNetworkModel";
+	}
+	
+	@GetMapping("/decideWhetherDerivedFrom/{baseWord}/{derivedOrNotDerivedWord}")
+	public String decideWhetherDerivedFrom(Model model, @PathVariable(name = "baseWord") String baseWord, @PathVariable(name = "derivedOrNotDerivedWord") String derivedOrNotDerivedWord) {
+		model.addAttribute("derviedOrNot", neuralNetworkService.decideWhetherDerivedFrom(baseWord, derivedOrNotDerivedWord));
+		return "neural-network/derivedOrNot";
 	}
 
 }

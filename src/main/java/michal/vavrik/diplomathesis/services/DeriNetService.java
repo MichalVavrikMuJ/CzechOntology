@@ -36,9 +36,9 @@ public class DeriNetService {
 //	@Autowired
 //	private DerivedSamplesRepository derivedSamplesRepository;
 	
-	public List<String> getBaseWords(int betweenStart, int betweenEnd) {
+	public List<DeriNetRow> getBaseWords(int pageStart, int pageSize) {
 		log.info("Starting to query for base words");
-		return derinetRepository.findByMainParentId(null, PageRequest.of(betweenStart, betweenEnd, Sort.by(Sort.Direction.ASC, "mainParentId"))).stream().map(DeriNetRow::getLemma).collect(Collectors.toList());
+		return derinetRepository.searchByIdWithoutDecimalPoint(PageRequest.of(pageStart, pageSize, Sort.by(Sort.Direction.ASC, "id")));
 	}
 	
 	public void saveDeriNetRows(List<DeriNetRowDTO> derinetRows) {
@@ -52,6 +52,14 @@ public class DeriNetService {
 		List<DeriNetRow> derivedWords = this.derinetRepository.findByMainParentId(derinetRepository.findByLemma(from).get(0).getId());
 		log.info("{} results retrieved.", derivedWords.size());
 		return derivedWords.stream().map(DeriNetRow::getLemma).collect(Collectors.toList());
+	}
+	
+	public List<String> getWordsDerived(DeriNetRow from) {
+		log.info("quering db for words derived from {}.", from.getLemma());
+		// derived words let say for row with id xy are those with id xy.something e.g. id=1 -> derived is 1.1, ...
+		List<DeriNetRow> derivedWords = this.derinetRepository.findByIdBetween(from.getId(), from.getId()+1);
+		log.info("{} results retrieved.", derivedWords.size());
+		return derivedWords.stream().map(DeriNetRow::getLemma).filter(x -> x != null).collect(Collectors.toList());
 	}
 	
 	public List<DeriNetRow> getDeriNetRowsDerived(String from) {

@@ -10,18 +10,7 @@
 <body>
 	<div data-role="page" id="page-1">
 		<div data-role="header">
-			<h1>Derived words from base word as determined by Neural Network</h1>
-			<h1 th:text="${baseWord}"></h1>
-		</div>
-		<div data-role="content">
-			<table>
-				<thead><tr>
-					<th>Derived</th>
-				</tr></thead>
-				<tr th:each="derived : ${listOfDerived}">
-					<td th:text="${derived}" style="padding-top: 10px; padding-bottom:10px"></td>
-				</tr>
-			</table>
+			<h1>Training model with base words for (in pagination terms) page n. <span th:text="${pageIndex}"></span> page size <span th:text="${pageSize}"></span></h1>
 		</div>
 		<div data-role="footer">
 			<h4>END</h4>

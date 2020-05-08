@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+	<script src="http://code.jquery.com/jquery-2.0.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<body>
+	<div data-role="page" id="page-1">
+		<div data-role="header">
+			<h1>According to my neural network, base word <span th:text="${baseWord}"></span> was</h1>
+			<h1 th:text="${derviedOrNot} ? 'derived' : 'not derived'"></h1>
+		</div>
+		<div data-role="footer">
+			<h4>END</h4>
+		</div>
+	</div>
+
+</body>
+</html>

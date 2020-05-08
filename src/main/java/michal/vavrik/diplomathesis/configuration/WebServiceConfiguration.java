@@ -2,10 +2,8 @@ package michal.vavrik.diplomathesis.configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.deeplearning4j.datasets.iterator.DoublesDataSetIterator;
 import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
@@ -17,7 +15,6 @@ import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
-import org.nd4j.linalg.primitives.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -36,7 +33,6 @@ import ma.glasnost.orika.impl.DefaultMapperFactory;
 import ma.glasnost.orika.metadata.Type;
 import michal.vavrik.diplomathesis.database.entity.DeriNetRow;
 import michal.vavrik.diplomathesis.rest.model.DeriNetRowDTO;
-import michal.vavrik.diplomathesis.services.MatcherService;
 
 /**
  * Serves for configuring web service.
@@ -50,14 +46,11 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	@Value("${fastText.word2vecModel}")
 	private String word2vecModelPattern;
 	
-	@Value("${neuralNetworkModel.trainingSetModel}")
-	private String neuralNetworkModelFilePath;
-	
 	@Autowired
 	private ApplicationContext context;
-
-	@Autowired
-	MatcherService matcherService;
+	
+	@Value("${neuralNetworkModel.trainingSetModel}")
+	private String neuralNetworkModelFilePath;
 	
 	@Bean
 	public MapperFacade mapperFacade() {
@@ -96,7 +89,7 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	@Bean
 	public MultiLayerConfiguration multiLayerConfiguration(Word2Vec word2Vec) {
 		log.info("Started preparing multi layer configuration.");
-		int numOfInputs = 300; // AKA word2Vec.getWordVector("ano").length;
+		int numOfInputs = 600; // AKA 2 * word2Vec.getWordVector("ano").length;
 		return new NeuralNetConfiguration.Builder()
 			    .seed(65432)
 			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
@@ -128,25 +121,18 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	}
 	
 	@Bean
-	MultiLayerNetwork multiLayerNetwork(MultiLayerConfiguration conf) throws IOException {
+	MultiLayerNetwork multiLayerNetwork(MultiLayerConfiguration conf, File trainingSetModelFile) throws IOException{
 		log.info("Started creating MultiLayerNetwork.");
+		// next 3 lines are for creating model only - first round
 //		MultiLayerNetwork multiLayerNetwork = new MultiLayerNetwork(conf);
 //		multiLayerNetwork.init();
-		File trainingSetModel = context.getResources(neuralNetworkModelFilePath)[0].getFile();
-		MultiLayerNetwork multiLayerNetwork = MultiLayerNetwork.load(trainingSetModel, true);
-		List<Pair<double[],double[]>> trainingSet = matcherService.getTrainigSet(1, 15);
-		if (trainingSet != null && trainingSet.size() > 0) {
-			DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, 1);
-			// TODO: decide on number of training set iterations!!! 1000?
-			for(int i = 0; i < 1000; i++) {
-				log.info("Started fitting network, iteration n. {}", i);
-				multiLayerNetwork.fit(iterator);
-			}
-			multiLayerNetwork.save(trainingSetModel, true);
-		} else {
-			log.error("NEURAL NETWORK COULD NOT BE TRAINED - PROVIDED TRAINING SET IS EMPTY!");
-		}
-		return multiLayerNetwork;
+//		return multiLayerNetwork;
+		return MultiLayerNetwork.load(trainingSetModelFile, true);
+	}
+	
+	@Bean
+	File trainingSetModelFile() throws IOException {
+		return context.getResources(neuralNetworkModelFilePath)[0].getFile();
 	}
 	
 //	@Bean
