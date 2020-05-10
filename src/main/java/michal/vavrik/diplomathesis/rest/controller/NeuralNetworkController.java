@@ -1,5 +1,8 @@
 package michal.vavrik.diplomathesis.rest.controller;
 
+import java.util.List;
+
+import org.nd4j.linalg.primitives.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,11 +23,30 @@ public class NeuralNetworkController {
 	@Autowired
 	private NeuralNetworkService neuralNetworkService;
 	
+	@Autowired
+	List<Pair<double[],double[]>> trainingSet;
+	
 	@GetMapping("/train/{pageIndex}/{pageSize}")
 	public String trainModel(Model model, @PathVariable(name = "pageIndex") int pageIndex, @PathVariable(name = "pageSize") int pageSize) {
 		neuralNetworkService.trainNeuralNetworkModel(pageIndex, pageSize);
 		model.addAttribute("pageIndex", pageIndex);
 		model.addAttribute("pageSize", pageSize);
+		return "neural-network/trainNeuralNetworkModel";
+	}
+	
+	@GetMapping("/train/")
+	public String trainModel(Model model) {
+		neuralNetworkService.trainNeuralNetworkModel(trainingSet);
+		model.addAttribute("pageIndex", 0);
+		model.addAttribute("pageSize", 1000);
+		return "neural-network/trainNeuralNetworkModel";
+	}
+	
+	@GetMapping("/evaluate/")
+	public String evaluateModel(Model model) {
+		neuralNetworkService.evaluateNeuralNetworkModel(trainingSet);
+		model.addAttribute("pageIndex", 0);
+		model.addAttribute("pageSize", 1000);
 		return "neural-network/trainNeuralNetworkModel";
 	}
 	

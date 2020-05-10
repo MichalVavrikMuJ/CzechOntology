@@ -25,8 +25,8 @@ public class MatcherService {
 	@Autowired
 	DeriNetService deriNetService;
 	
-	public static final double[] positivePattern = {1};
-	public static final double[] negativePattern = {0};
+	public static final double[] positivePattern = {1, 0};
+	public static final double[] negativePattern = {0, 1};
 	
 	public OntologyEntryDTO matchKeyWordWithOntology(String keyword) {
 		return null;

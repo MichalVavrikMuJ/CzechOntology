@@ -15,7 +15,7 @@ import michal.vavrik.diplomathesis.services.DeriNetService.DistanceToRoot;
 @Service @Slf4j
 public class Word2VecService {
 
-	public static final double DEFAULT_SIMILARITY_ACCURACY = 0.85;
+	public static final double DEFAULT_SIMILARITY_ACCURACY = 0.90;
 	
 	@Autowired
 	private Word2Vec word2Vec;

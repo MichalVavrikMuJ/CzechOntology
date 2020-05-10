@@ -12,6 +12,7 @@ import org.nd4j.evaluation.meta.Prediction;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.primitives.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,18 +21,13 @@ import lombok.extern.slf4j.Slf4j;
 public class NeuralNetworkService {
 	
 	@Autowired
-	private Word2VecService word2VecService;
-	
-	@Autowired
-	private MultiLayerNetwork network;
-	
-	@Autowired
 	private File trainingSetModelFile;
 
 	@Autowired
 	private MatcherService matcherService;
 	
 	@Autowired
+	@Qualifier("loadedNeuralNetworkModel")
 	private MultiLayerNetwork multiLayerNetwork;
 	
 	/**
@@ -49,7 +45,7 @@ public class NeuralNetworkService {
 			log.error("Could not find word matrixes in word2vec model.");
 			return false;
 		}
-		INDArray output = network.output(neuralNetworkInput);
+		INDArray output = multiLayerNetwork.output(neuralNetworkInput);
 		boolean derived = output.getRow(0).toString().equals("[1.0000]");
 		log.info("Is {} derived from {}? {} ({})", baseWord, derivedOrNotDerivedWord, Boolean.toString(derived), output.getRow(0).toString());
 		
@@ -58,9 +54,12 @@ public class NeuralNetworkService {
 	}
 	
 	public void trainNeuralNetworkModel(int pageIndex, int pageSize) {
-		List<Pair<double[],double[]>> trainingSet = matcherService.getTrainigSet(pageIndex, pageSize);
+		trainNeuralNetworkModel(matcherService.getTrainigSet(pageIndex, pageSize));
+	}
+	
+	public void trainNeuralNetworkModel(List<Pair<double[],double[]>> trainingSet) {
 		if (trainingSet != null && trainingSet.size() > 0) {
-			DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, 1);
+			DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, trainingSet.size());
 			for(int i = 0; i < 1000; i++) {
 				log.info("Started fitting network, iteration n. {}", i);
 				multiLayerNetwork.fit(iterator);
@@ -76,11 +75,15 @@ public class NeuralNetworkService {
 	}
 	
 	public void evaluateNeuralNetworkModel(int pageIndex, int pageSize) {
-		List<Pair<double[],double[]>> trainingSet = matcherService.getTrainigSet(pageIndex, pageSize);
+		evaluateNeuralNetworkModel(matcherService.getTrainigSet(pageIndex, pageSize));
+	}
+	
+	public void evaluateNeuralNetworkModel(List<Pair<double[],double[]>> trainingSet) {
 		if (trainingSet != null && trainingSet.size() > 0) {
-		DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, 1);
+		DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, trainingSet.size());
 		Evaluation eval = multiLayerNetwork.evaluate(iterator);
         List<Prediction> predictionErrors = eval.getPredictionErrors();
+        log.info(multiLayerNetwork.summary());
         log.info("\n\n+++++ Prediction Errors +++++");
         if (predictionErrors != null) {
             for (Prediction p : predictionErrors) {
