@@ -7,6 +7,7 @@ import java.util.List;
 import org.datavec.api.records.metadata.RecordMetaData;
 import org.deeplearning4j.datasets.iterator.DoublesDataSetIterator;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.nd4j.evaluation.classification.Evaluation;
 import org.nd4j.evaluation.meta.Prediction;
 import org.nd4j.linalg.api.ndarray.INDArray;
@@ -29,6 +30,8 @@ public class NeuralNetworkService {
 	@Autowired
 	@Qualifier("loadedNeuralNetworkModel")
 	private MultiLayerNetwork multiLayerNetwork;
+	
+	private static final int NUMBER_OF_ITERATIONS = 15;
 	
 	/**
 	 * Large linguistic resources contain over millions lexemes connected by thousands of thousands links that correspond to derivational relationship.
@@ -59,8 +62,9 @@ public class NeuralNetworkService {
 	
 	public void trainNeuralNetworkModel(List<Pair<double[],double[]>> trainingSet) {
 		if (trainingSet != null && trainingSet.size() > 0) {
-			DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, trainingSet.size());
-			for(int i = 0; i < 1000; i++) {
+			DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, 20);
+			multiLayerNetwork.setListeners(new ScoreIterationListener(100));
+			for(int i = 0; i < NUMBER_OF_ITERATIONS; i++) {
 				log.info("Started fitting network, iteration n. {}", i);
 				multiLayerNetwork.fit(iterator);
 				try {
@@ -80,7 +84,7 @@ public class NeuralNetworkService {
 	
 	public void evaluateNeuralNetworkModel(List<Pair<double[],double[]>> trainingSet) {
 		if (trainingSet != null && trainingSet.size() > 0) {
-		DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, trainingSet.size());
+		DoublesDataSetIterator iterator = new DoublesDataSetIterator(trainingSet, 20);
 		Evaluation eval = multiLayerNetwork.evaluate(iterator);
         List<Prediction> predictionErrors = eval.getPredictionErrors();
         log.info(multiLayerNetwork.summary());

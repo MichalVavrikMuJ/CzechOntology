@@ -10,13 +10,13 @@ import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
-import org.deeplearning4j.nn.conf.distribution.UniformDistribution;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.weights.WeightInit;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.learning.config.Adam;
-import org.nd4j.linalg.lossfunctions.LossFunctions;
+import org.nd4j.linalg.lossfunctions.LossFunctions.LossFunction;
 import org.nd4j.linalg.primitives.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -97,7 +97,51 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 	public MultiLayerConfiguration multiLayerConfiguration(Word2Vec word2Vec) {
 		log.info("Started preparing multi layer configuration.");
 		int numOfInputs = 600; // AKA 2 * word2Vec.getWordVector("ano").length;
+		int numOfHiddenNodes = numOfInputs + 50;
+		int numOfOutputs = 2;
+
+		return new NeuralNetConfiguration.Builder()
+			    .seed(65353)
+			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+			    .updater(new Adam(5e-3))
+			    .list()
+			    .layer(0, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfHiddenNodes)
+			            .weightInit(WeightInit.XAVIER)
+			            .activation(Activation.RELU)
+			            .build())
+			    .layer(1, new OutputLayer.Builder(LossFunction.NEGATIVELOGLIKELIHOOD)
+			            .weightInit(WeightInit.XAVIER)
+			            .activation(Activation.SOFTMAX).weightInit(WeightInit.XAVIER)
+			            .nIn(numOfHiddenNodes).nOut(numOfOutputs).build())
+			    .build();
+		
+		// current version
+//		LSTM layer0 = new LSTM.Builder().nIn(numOfInputs).nOut(numOfHiddenNodes).activation(Activation.RELU).build();
+//		LSTM layer1 = new LSTM.Builder().nIn(numOfHiddenNodes).nOut(numOfHiddenNodes).activation(Activation.RELU).build();
+//		LSTM layer2 = new LSTM.Builder().nIn(numOfHiddenNodes).nOut(numOfHiddenNodes).activation(Activation.RELU).build();
+//		RnnOutputLayer layer3 = new RnnOutputLayer.Builder().nIn(numOfHiddenNodes).nOut(numOfOutputs).activation(Activation.SOFTMAX).lossFunction(LossFunction.MCXENT).build();
+//
+//		
+		
 //		return new NeuralNetConfiguration.Builder()
+//				.seed(500)
+//				.optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+//				.weightInit(WeightInit.XAVIER)
+//				.updater(new Adam(5e-3))
+//				.l2(1e-5)
+//				.list()
+//					.layer(0, layer0)
+//					.layer(1, layer1)
+//					.layer(2, layer2)
+//					.layer(3, layer3)
+//				.backpropType(BackpropType.Standard)
+////				.backpropType(BackpropType.TruncatedBPTT)
+////				.tBPTTBackwardLength(2)
+////				.tBPTTForwardLength(2)
+//				.build();
+		
+		// second version
+		//		return new NeuralNetConfiguration.Builder()
 //			    .seed(65432)
 //			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
 //			    .updater(new Adam(0.1))
@@ -109,26 +153,28 @@ public class WebServiceConfiguration extends WsConfigurerAdapter {
 //              .layer(1, new OutputLayer.Builder(LossFunctions.LossFunction.MSE)
 ////                      .weightInit(WeightInit.DISTRIBUTION).dist(new UniformDistribution(0,1))
 //                      .activation(Activation.SIGMOID)
-//                      .nIn(numOfInputs).nOut(1).build())
+//                      .nIn(numOfInputs).nOut(2).build())
 //              .build();
-		return new NeuralNetConfiguration.Builder()
-			    .seed(65432)
-			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-			    .updater(new Adam(0.1))
-			    .list()
-			    .layer(0, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfInputs)
-//                      .weightInit(WeightInit.DISTRIBUTION).dist(new UniformDistribution(0,1))
-                      .activation(Activation.SIGMOID)
-                      .build())
-			    .layer(1, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfInputs / 2)
-//                      .weightInit(WeightInit.DISTRIBUTION).dist(new UniformDistribution(0,1))
-                      .activation(Activation.SIGMOID)
-                      .build())
-                .layer(2, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                      .weightInit(new UniformDistribution(0,1))
-                      .activation(Activation.SOFTMAX)
-                      .nOut(2).build())
-                .build();
+		
+		// first version
+//		return new NeuralNetConfiguration.Builder()
+//			    .seed(65432)
+//			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+//			    .updater(new Adam(0.1))
+//			    .list()
+//			    .layer(0, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfInputs)
+////                      .weightInit(WeightInit.DISTRIBUTION).dist(new UniformDistribution(0,1))
+//                      .activation(Activation.SIGMOID)
+//                      .build())
+//			    .layer(1, new DenseLayer.Builder().nIn(numOfInputs).nOut(numOfInputs / 2)
+////                      .weightInit(WeightInit.DISTRIBUTION).dist(new UniformDistribution(0,1))
+//                      .activation(Activation.SIGMOID)
+//                      .build())
+//                .layer(2, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+//                      .weightInit(new UniformDistribution(0,1))
+//                      .activation(Activation.SOFTMAX)
+//                      .nOut(2).build())
+//                .build();
 	}
 	
 	@Bean

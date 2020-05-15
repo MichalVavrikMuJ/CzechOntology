@@ -65,11 +65,11 @@ public class MatcherService {
 		wordsSimilarInCharacter.removeAll(derivedWords);
 		log.info("List of words similar in character has {} items after removing derived words.", wordsSimilarInCharacter.size());
 		List<double[]> negativeSamples = word2VecService.getWordVectors(wordsSimilarInCharacter);
-		if ( negativeSamples == null || negativeSamples.isEmpty() ) { return null; }
+		if ( negativeSamples == null || negativeSamples.isEmpty() || negativeSamples.size() < positiveSamples.size() ) { return null; }
 
 		//instantiating training set
 		List<Pair<double[], double[]>> trainingSet = positiveSamples.stream().map(x -> Pair.makePair(merge2Arrays(baseWordVector, x), positivePattern)).collect(Collectors.toList());
-		negativeSamples.stream().map(x -> Pair.makePair(merge2Arrays(baseWordVector, x), negativePattern)).forEach(y -> trainingSet.add(y));
+		negativeSamples.stream().map(x -> Pair.makePair(merge2Arrays(baseWordVector, x), negativePattern)).limit(positiveSamples.size()).forEach(y -> trainingSet.add(y));
 		return trainingSet;
 	}
 
